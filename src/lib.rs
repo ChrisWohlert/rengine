@@ -27,9 +27,9 @@ impl State {
         // Backends::all => Vulkan + Metal + DX12 +
         // Browser WebGPU
         let instance =
-            wgpu::Instance::new(wgpu::Backends::all());
+            wgpu::Instance::new(wgpu::InstanceDescriptor::default());
         let surface =
-            unsafe { instance.create_surface(window) };
+            unsafe { instance.create_surface(window).unwrap() };
         let adapter = instance
             .request_adapter(&wgpu::RequestAdapterOptions {
                 power_preference:
@@ -69,11 +69,12 @@ impl State {
 
         let config = wgpu::SurfaceConfiguration {
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
-            format: surface.get_supported_formats(&adapter)
-                [0],
+            format: surface.get_capabilities(&adapter).formats[0],
             width: size.width,
             height: size.height,
             present_mode: wgpu::PresentMode::Fifo,
+            alpha_mode: wgpu::CompositeAlphaMode::Auto,
+            view_formats: vec![]
         };
         let render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
             label: Some("Render Pipeline"),
@@ -114,6 +115,7 @@ impl State {
         });
 
         surface.configure(&device, &config);
+
         Self {
             surface,
             device,
@@ -167,9 +169,9 @@ impl State {
                             ops: wgpu::Operations {
                                 load: wgpu::LoadOp::Clear(
                                     wgpu::Color {
-                                        r: 0.1,
-                                        g: 0.2,
-                                        b: 0.3,
+                                        r: 0.0,
+                                        g: 0.0,
+                                        b: 0.0,
                                         a: 1.0,
                                     },
                                 ),
@@ -182,7 +184,7 @@ impl State {
             );
 
             render_pass.set_pipeline(&self.render_pipeline); // 2.
-            render_pass.draw(0..3, 0..1); // 3.
+            render_pass.draw(0..6, 0..1); // 3.
         }
 
 
