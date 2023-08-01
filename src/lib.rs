@@ -7,6 +7,9 @@ use winit::{
     event_loop::{ControlFlow, EventLoop},
     window::{Window, WindowBuilder},
 };
+use egui_winit::WinitInput;
+use egui_wgpu_backend::WgpuPainter;
+use egui::{CtxRef, RawInput};
 
 struct State {
     surface: wgpu::Surface,
